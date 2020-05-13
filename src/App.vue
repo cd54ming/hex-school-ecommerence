@@ -23,40 +23,49 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn href="https://github.com/vuetifyjs/vuetify/releases/latest" target="_blank" text>
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <v-avatar size="36" color="primary lighten-1" @click="isOpenLogin = true">
+        <v-icon dark>mdi-account-circle</v-icon>
+        <!-- <span class="white--text headline">K</span> -->
+      </v-avatar>
     </v-app-bar>
 
     <v-content>
+      <router-view></router-view>
+      <!-- <HelloI18n /> -->
       <!-- <HelloWorld /> -->
     </v-content>
+
+    <Login v-model="isOpenLogin" />
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import Login from '@/components/Login.vue';
+// import HelloI18n from './components/HelloI18n.vue';
 // import HelloWorld from './components/HelloWorld.vue';
 
 export default Vue.extend({
   name: 'App',
 
   components: {
+    Login,
+    // HelloI18n,
     // HelloWorld,
   },
 
   data: () => ({
+    isOpenLogin: false,
     //
   }),
 
   created() {
-    const apiPath = process.env.VUE_APP_API_PATH;
-    const customApiPath = process.env.VUE_APP_CUSTOM_API_PATH;
-    const apiURL = `${apiPath}/api/${customApiPath}/products`;
+    const apiURL = '/products';
     this.axios.get(apiURL).then((result) => {
       console.log(result);
     });
   },
+
+  methods: {},
 });
 </script>
