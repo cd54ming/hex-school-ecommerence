@@ -7,7 +7,8 @@ import store from './store';
 import vuetify from './plugins/vuetify';
 import i18n from './i18n';
 
-axios.defaults.baseURL = `${process.env.VUE_APP_API_PATH}/api/${process.env.VUE_APP_CUSTOM_API_PATH}`;
+axios.defaults.baseURL = process.env.VUE_APP_BASE_API_PATH;
+axios.defaults.withCredentials = true;
 
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
