@@ -2,6 +2,7 @@ import '@mdi/font/css/materialdesignicons.css';
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
 import zhHant from 'vuetify/es5/locale/zh-Hant';
+import en from 'vuetify/es5/locale/en';
 
 // import colors from 'vuetify/lib/util/colors';
 
@@ -9,8 +10,8 @@ Vue.use(Vuetify);
 
 export default new Vuetify({
   lang: {
-    locales: { zhHant },
-    current: 'zhHant',
+    locales: { 'en-US': en, 'zh-TW': zhHant },
+    current: 'zh-TW',
   },
   icons: {
     iconfont: 'mdi',

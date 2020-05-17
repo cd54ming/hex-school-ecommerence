@@ -24,17 +24,31 @@
         </template>
 
         <template v-slot:item.origin_price="{ item: product }">
-          <span class="text-end d-block">{{ product.origin_price }}</span>
+          <span class="text-end d-block" v-if="product.origin_price">
+            {{ $n(product.origin_price, 'currency') }}
+          </span>
         </template>
 
         <template v-slot:item.price="{ item: product }">
-          <span class="text-end d-block">{{ product.price }}</span>
+          <span class="text-end d-block" v-if="product.price">{{
+            $n(product.price, 'currency')
+          }}</span>
         </template>
 
         <template v-slot:item.imageUrl="{ item: product }">
-          <v-avatar size="42" v-if="product.imageUrl">
+          <v-container class="py-2">
+            <v-row align="center" justify="center">
+              <v-img
+                :src="product.imageUrl"
+                :alt="product.title"
+                max-height="50"
+                max-width="50"
+              ></v-img>
+            </v-row>
+          </v-container>
+          <!-- <v-avatar size="42" v-if="product.imageUrl" tile>
             <img :src="product.imageUrl" :alt="product.title" />
-          </v-avatar>
+          </v-avatar> -->
         </template>
 
         <template v-slot:item.actions="{ item: product }">
@@ -138,6 +152,7 @@
                     label="商品名稱"
                     dense
                     required
+                    :disabled="submitDataLoading"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="6">
@@ -146,10 +161,17 @@
                     label="商品分類"
                     dense
                     required
+                    :disabled="submitDataLoading"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="6">
-                  <v-text-field v-model="product.unit" label="單位" dense required></v-text-field>
+                  <v-text-field
+                    v-model="product.unit"
+                    label="單位"
+                    dense
+                    required
+                    :disabled="submitDataLoading"
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="6">
                   <v-text-field
@@ -157,24 +179,55 @@
                     label="原價"
                     dense
                     required
+                    :disabled="submitDataLoading"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="6">
-                  <v-text-field v-model="product.price" label="售價" dense required></v-text-field>
+                  <v-text-field
+                    v-model="product.price"
+                    label="售價"
+                    dense
+                    required
+                    :disabled="submitDataLoading"
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12">
                   <v-file-input
-                    v-model="product.image"
+                    v-model="uploadedImage"
+                    :loading="uploadImageLoading"
+                    :disabled="uploadImageLoading"
+                    accept="image/png, image/jpeg, image/bmp"
                     color="primary"
                     label="圖片"
                     prepend-icon=""
-                    :show-size="1000"
                     dense
+                    @change="uploadImage"
                   >
                     <template v-slot:selection="{ text }">
                       <v-chip color="primary" dark label small> {{ text }}</v-chip>
                     </template>
                   </v-file-input>
+                </v-col>
+                <v-col cols="12" v-if="isNewProduct && uploadedImage">
+                  <v-img :src="uploadedImageUrl"> </v-img>
+                </v-col>
+                <v-col cols="12" v-else-if="!isNewProduct && product.imageUrl">
+                  <v-img :src="uploadedImageUrl || product.imageUrl">
+                    <!-- <v-row> -->
+                    <v-avatar
+                      size="20"
+                      class="float-right ma-1 grey lighten-1"
+                      style="opacity: 0.75;"
+                    >
+                      <v-icon
+                        @click="clearProductImage"
+                        color="white"
+                        small
+                        :disabled="submitDataLoading"
+                        >mdi-close</v-icon
+                      >
+                    </v-avatar>
+                  </v-img>
                 </v-col>
                 <v-col cols="12">
                   <v-textarea
@@ -182,6 +235,7 @@
                     v-model="product.description"
                     rows="4"
                     label="商品描述"
+                    :disabled="submitDataLoading"
                   ></v-textarea>
                 </v-col>
                 <v-col cols="12">
@@ -190,6 +244,7 @@
                     v-model="product.content"
                     rows="4"
                     label="說明內容"
+                    :disabled="submitDataLoading"
                   ></v-textarea>
                 </v-col>
                 <v-col cols="auto">
@@ -199,6 +254,7 @@
                     :false-value="0"
                     :true-value="1"
                     label="是否啟用"
+                    :disabled="submitDataLoading"
                   >
                   </v-switch>
                 </v-col>
@@ -236,17 +292,23 @@ import { mapState } from 'vuex';
 export default Vue.extend({
   data() {
     return {
+      validateTest: 0,
       getProductsLoading: false,
       submitDataLoading: false,
       deleteProductLoading: false,
       switchAvalibleLoading: {},
       deleteProductDialog: false,
+      uploadedImage: '',
+      uploadImageLoading: false,
       productDialog: false,
       isNewProduct: false,
       productWillbeDeleted: {},
       page: 1,
       pageCount: 0,
-      product: {},
+      product: {
+        image: '',
+        imageUrl: '',
+      },
     };
   },
 
@@ -257,7 +319,12 @@ export default Vue.extend({
       { text: '原價', value: 'origin_price', width: 60 },
       { text: '售價', value: 'price', width: 30 },
       { text: '單位', value: 'unit', width: 30 },
-      { text: '圖片', value: 'imageUrl', width: 60 },
+      {
+        text: '圖片',
+        value: 'imageUrl',
+        width: 60,
+        align: 'center',
+      },
       {
         text: '是否啟用',
         value: 'is_enabled',
@@ -279,16 +346,34 @@ export default Vue.extend({
 
   computed: {
     ...mapState({
-      productsAll: (state) =>
-        // eslint-disable-next-line implicit-arrow-linebreak
-        Object.values(state.productsAll).map((product) => ({
-          ...product,
-          // eslint-disable-next-line @typescript-eslint/camelcase
-        })),
+      uploadedImageUrl: 'uploadedImageUrl',
+      productsAll(state) {
+        return Object.values(state.productsAll).map((product) => ({ ...product }));
+      },
     }),
   },
 
   methods: {
+    clearProductImage() {
+      this.uploadedImage = null;
+      this.product.image = '';
+      this.product.imageUrl = '';
+    },
+    async uploadImage() {
+      if (this.uploadedImage) {
+        const formData = new FormData();
+        formData.append('file-to-upload', this.uploadedImage);
+        this.uploadImageLoading = true;
+        await this.$store.dispatch('uploadImage', formData);
+        this.uploadImageLoading = false;
+        this.product.image = this.uploadedImage.name;
+        this.product.imageUrl = this.uploadedImageUrl;
+      } else {
+        this.product.image = '';
+        this.product.imageUrl = '';
+        this.$store.commit('uploadedImageUrl', '');
+      }
+    },
     async switchAvalible({ id: productId }, isAvalible: number) {
       const originalProduct = this.productsAll.find((product) => productId === product.id);
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -302,7 +387,11 @@ export default Vue.extend({
     },
     async deleteProduct() {
       this.deleteProductLoading = true;
-      await this.$store.dispatch('deleteProduct', this.productWillbeDeleted.id);
+      try {
+        await this.$store.dispatch('deleteProduct', this.productWillbeDeleted.id);
+      } catch (error) {
+        console.log(error);
+      }
       this.deleteProductLoading = false;
       this.closeDeleteProductDialog();
       setTimeout(() => {
@@ -348,6 +437,7 @@ export default Vue.extend({
       } else {
         this.product = { ...product };
       }
+      this.uploadedImage = null;
       this.productDialog = true;
     },
     closeProductDialog() {
