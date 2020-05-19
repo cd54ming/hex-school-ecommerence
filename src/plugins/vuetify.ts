@@ -1,6 +1,6 @@
-import '@mdi/font/css/materialdesignicons.css';
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
+import '@mdi/font/css/materialdesignicons.css';
 import zhHant from 'vuetify/es5/locale/zh-Hant';
 import en from 'vuetify/es5/locale/en';
 
@@ -11,7 +11,7 @@ Vue.use(Vuetify);
 export default new Vuetify({
   lang: {
     locales: { 'en-US': en, 'zh-TW': zhHant },
-    current: 'zh-TW',
+    current: localStorage.getItem('locale') || process.env.VUE_APP_DEFAULT_LOCALE,
   },
   icons: {
     iconfont: 'mdi',

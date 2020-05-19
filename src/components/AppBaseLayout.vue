@@ -53,19 +53,32 @@
       </div>
 
       <v-spacer></v-spacer>
-      <v-menu offset-y>
+      <v-menu v-model="settingMenu" offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn icon color="white" v-on="on">
             <v-icon>mdi-cog</v-icon>
           </v-btn>
         </template>
-        <v-list nav>
+        <v-list width="200">
+          <v-list-group v-model="localeList">
+            <template v-slot:activator>
+              <v-list-item-title>
+                {{ $t('language') }}
+                <!-- <v-icon small>mdi-translate</v-icon> -->
+              </v-list-item-title>
+            </template>
+            <v-list-item
+              v-for="(locale, key, index) in locales"
+              :key="index"
+              @click="switchLocale(key)"
+            >
+              <v-list-item-title>{{ locale }}</v-list-item-title>
+            </v-list-item>
+          </v-list-group>
+          <v-divider></v-divider>
           <v-list-item @click="logout">
-            <v-list-item-title>登出</v-list-item-title>
+            <v-list-item-title>{{ $t('logout') }}</v-list-item-title>
           </v-list-item>
-          <!-- <v-list-item @click="login">
-            <v-list-item-title>登入</v-list-item-title>
-          </v-list-item> -->
         </v-list>
       </v-menu>
     </v-app-bar>
@@ -80,6 +93,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import localeService from '@/util/localeService';
 // import HelloI18n from './components/HelloI18n.vue';
 // import HelloWorld from './components/HelloWorld.vue';
 
@@ -93,16 +107,33 @@ export default Vue.extend({
 
   data: () => ({
     isOpenLogin: false,
-    //
+    settingMenu: false,
+    localeList: false,
   }),
 
+  created() {
+    this.locales = localeService.locales;
+  },
+
+  // computed() {
+  //   locale() {
+  //     return this.$root.$locale;
+  //   }
+  // },
+
   methods: {
-    login() {
-      this.$router.push({ path: '/login' });
-    },
     async logout() {
+      this.closeSettingMenu();
       await this.axios.post('/logout');
       await this.$router.push({ path: '/login' });
+    },
+    switchLocale(locale: string) {
+      localeService.switchLocale(locale);
+      this.closeSettingMenu();
+    },
+    closeSettingMenu() {
+      this.localeList = false;
+      this.settingMenu = false;
     },
   },
 });

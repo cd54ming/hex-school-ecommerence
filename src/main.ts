@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
+import localeService from '@/util/localeService';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -12,6 +13,7 @@ axios.defaults.withCredentials = true;
 
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
+localeService.setDefaultLocale();
 
 new Vue({
   router,

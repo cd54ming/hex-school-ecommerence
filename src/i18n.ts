@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueI18n, { LocaleMessages } from 'vue-i18n';
-import numberFormats from '@/util/numberFormats.js';
+import numberFormats from '@/util/numberFormats';
 
 Vue.use(VueI18n);
 
@@ -18,9 +18,8 @@ function loadLocaleMessages(): LocaleMessages {
 }
 
 export default new VueI18n({
-  // locale: process.env.VUE_APP_I18N_LOCALE || 'en-US',
-  locale: localStorage.getItem('locale') || 'en-US',
-  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || 'en-US',
+  locale: localStorage.getItem('locale') || process.env.VUE_APP_DEFAULT_LOCALE,
+  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || process.env.VUE_APP_DEFAULT_LOCALE,
   numberFormats,
   silentFallbackWarn: true,
   messages: loadLocaleMessages(),

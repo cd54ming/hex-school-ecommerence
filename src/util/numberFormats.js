@@ -3,7 +3,7 @@ const numberFormats = {
     currency: {
       style: 'currency',
       currency: 'USD',
-      currencyDisplay: 'name',
+      currencyDisplay: 'symbol',
     },
   },
   'zh-TW': {

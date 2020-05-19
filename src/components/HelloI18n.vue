@@ -1,12 +1,10 @@
 <template>
   <div>
-    <p>{{ $t('message') }}</p>
+    <p>{{ $t('testi18n') }}</p>
     <p>{{ $n(9999, 'currency') }}</p>
-    <p>{{ this.$vuetify.lang.current }}</p>
-    <v-date-picker :locale="this.$vuetify.lang.current"></v-date-picker>
-    <v-select v-model="language" :items="langs">
-      <option v-for="(lang, i) in langs" :key="`Lang${i}`" :value="lang"> {{ lang }}</option>
-    </v-select>
+    <p>{{ $vuetify.lang.current }}</p>
+    <p>{{ $i18n.locale }}</p>
+    <v-date-picker :locale="$vuetify.lang.current"></v-date-picker>
   </div>
 </template>
 
@@ -35,31 +33,8 @@ import Vue from 'vue';
 import localeService from '@/util/localeService.js';
 
 export default Vue.extend({
-  data: () => ({
-    // need to match thie file name under locales foloder
-    langs: ['zh-TW', 'en-US'],
-    language: '',
-  }),
-
   created() {
-    this.language = this.getLanguage();
-    console.log(this.$root.$vuetify);
-  },
-
-  watch: {
-    language() {
-      localeService.switchLanguage(this.language);
-      // this.$root.$i18n.locale = this.language;
-      // this.$root.$vuetify.lang.current = this.language;
-      // localStorage.setItem('locale', this.language);
-    },
-  },
-
-  methods: {
-    getLanguage() {
-      return localeService.getLanguage();
-      // return localStorage.getItem('locale') || 'en-US';
-    },
+    console.log(this.$root);
   },
 });
 </script>

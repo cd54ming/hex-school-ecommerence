@@ -30,7 +30,7 @@ export default new Vuex.Store({
       commit('uploadedImageUrl', data.imageUrl);
     },
     async deleteProduct(_, productId) {
-      const apiURL = `wer/api/${process.env.VUE_APP_CUSTOM_API_PATH}/admin/product/${productId}`;
+      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/admin/product/${productId}`;
       await axios.delete(apiURL);
     },
     async updateProduct(_, { productId, apiParams }) {

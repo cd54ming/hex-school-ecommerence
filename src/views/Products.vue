@@ -17,7 +17,9 @@
             <v-row>
               <v-spacer></v-spacer>
               <v-col cols="auto">
-                <v-btn color="primary" depressed @click="openProductDialog(true)">新增商品</v-btn>
+                <v-btn color="primary" depressed @click="openProductDialog(true)">{{
+                  $t('create-new-product')
+                }}</v-btn>
               </v-col>
             </v-row>
           </v-container>
@@ -30,9 +32,9 @@
         </template>
 
         <template v-slot:item.price="{ item: product }">
-          <span class="text-end d-block" v-if="product.price">{{
-            $n(product.price, 'currency')
-          }}</span>
+          <span class="text-end d-block" v-if="product.price">
+            {{ $n(product.price, 'currency') }}
+          </span>
         </template>
 
         <template v-slot:item.imageUrl="{ item: product }">
@@ -66,9 +68,9 @@
               :input-value="product.is_enabled"
               :false-value="0"
               :true-value="1"
-              @change="switchAvalible(product, $event)"
-              :loading="switchAvalibleLoading[product.id]"
-              :disabled="switchAvalibleLoading[product.id]"
+              @change="switchAvaliable(product, $event)"
+              :loading="switchAvaliableLoading[product.id]"
+              :disabled="switchAvaliableLoading[product.id]"
             ></v-switch>
           </v-row>
         </template>
@@ -130,7 +132,7 @@
       v-model="productDialog"
       max-width="450"
       min-width="350"
-      :persistent="submitDataLoading"
+      :persistent="submitDataLoading || uploadImageLoading"
     >
       <v-card :loading="submitDataLoading">
         <v-toolbar flat dense dark color="primary">
@@ -138,7 +140,11 @@
             (() => (isNewProduct ? '新增商品' : '修改商品資訊'))()
           }}</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn icon @click="closeProductDialog" :disabled="submitDataLoading">
+          <v-btn
+            icon
+            @click="closeProductDialog"
+            :disabled="submitDataLoading || uploadImageLoading"
+          >
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -267,14 +273,14 @@
           <v-btn
             outlined
             color="secondary"
-            :disabled="submitDataLoading"
+            :disabled="submitDataLoading || uploadImageLoading"
             @click="closeProductDialog"
             >取消</v-btn
           >
           <v-btn
             depressed
             color="primary"
-            :disabled="submitDataLoading"
+            :disabled="submitDataLoading || uploadImageLoading"
             :loading="submitDataLoading"
             @click="submitData"
             >{{ (() => (isNewProduct ? '新增' : '修改'))() }}</v-btn
@@ -296,7 +302,7 @@ export default Vue.extend({
       getProductsLoading: false,
       submitDataLoading: false,
       deleteProductLoading: false,
-      switchAvalibleLoading: {},
+      switchAvaliableLoading: {},
       deleteProductDialog: false,
       uploadedImage: '',
       uploadImageLoading: false,
@@ -313,49 +319,58 @@ export default Vue.extend({
   },
 
   async created() {
-    this.headers = [
-      { text: '分類', value: 'category', width: 60 },
-      { text: '商品名稱', value: 'title', width: 90 },
-      { text: '原價', value: 'origin_price', width: 60 },
-      { text: '售價', value: 'price', width: 30 },
-      { text: '單位', value: 'unit', width: 30 },
-      {
-        text: '圖片',
-        value: 'imageUrl',
-        width: 60,
-        align: 'center',
-      },
-      {
-        text: '是否啟用',
-        value: 'is_enabled',
-        width: 60,
-        align: 'center',
-      },
-      {
-        text: '編輯',
-        value: 'actions',
-        width: 60,
-        divider: true,
-        sortable: false,
-        align: 'center',
-      },
-    ];
     this.productInitialize();
     await this.getProducts();
   },
 
   computed: {
-    ...mapState({
-      uploadedImageUrl: 'uploadedImageUrl',
-      productsAll(state) {
-        return Object.values(state.productsAll).map((product) => ({ ...product }));
-      },
-    }),
+    headers() {
+      return [
+        { text: this.$t('category'), value: 'category', width: 60 },
+        { text: this.$t('product-title'), value: 'title', width: 90 },
+        { text: this.$t('original-price'), value: 'origin_price', width: 30 },
+        { text: this.$t('price'), value: 'price', width: 30 },
+        { text: this.$t('unit'), value: 'unit', width: 30 },
+        {
+          text: this.$t('image'),
+          value: 'imageUrl',
+          width: 60,
+          align: 'center',
+        },
+        {
+          text: this.$t('avaliable'),
+          value: 'is_enabled',
+          width: 60,
+          align: 'center',
+        },
+        {
+          text: this.$t('edit'),
+          value: 'actions',
+          width: 60,
+          divider: true,
+          sortable: false,
+          align: 'center',
+        },
+      ];
+    },
+    uploadedImageUrl() {
+      return this.$store.state.uploadedImageUrl;
+    },
+    productsAll() {
+      const { productsAll } = this.$store.state;
+      return Object.values(productsAll).map((product) => ({ ...product }));
+    },
+    // ...mapState({
+    //   uploadedImageUrl: 'uploadedImageUrl',
+    //   productsAll(state: any) {
+    //     return Object.values(state.productsAll).map((product) => ({ ...product }));
+    //   },
+    // }),
   },
 
   methods: {
     clearProductImage() {
-      this.uploadedImage = null;
+      this.uploadedImage = '';
       this.product.image = '';
       this.product.imageUrl = '';
     },
@@ -374,16 +389,16 @@ export default Vue.extend({
         this.$store.commit('uploadedImageUrl', '');
       }
     },
-    async switchAvalible({ id: productId }, isAvalible: number) {
+    async switchAvaliable({ id: productId }, isAvaliable: number) {
       const originalProduct = this.productsAll.find((product) => productId === product.id);
       // eslint-disable-next-line @typescript-eslint/camelcase
-      originalProduct.is_enabled = isAvalible;
-      this.$set(this.switchAvalibleLoading, productId, true);
+      originalProduct.is_enabled = isAvaliable;
+      this.$set(this.switchAvaliableLoading, productId, true);
       await this.$store.dispatch('updateProduct', {
         productId,
         apiParams: { data: originalProduct },
       });
-      this.$set(this.switchAvalibleLoading, productId, false);
+      this.$set(this.switchAvaliableLoading, productId, false);
     },
     async deleteProduct() {
       this.deleteProductLoading = true;
@@ -437,7 +452,7 @@ export default Vue.extend({
       } else {
         this.product = { ...product };
       }
-      this.uploadedImage = null;
+      this.uploadedImage = '';
       this.productDialog = true;
     },
     closeProductDialog() {

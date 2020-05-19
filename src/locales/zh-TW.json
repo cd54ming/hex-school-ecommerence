@@ -1,3 +1,14 @@
 {
-  "message": "您好， i18n !!"
+  "testi18n": "您好，i18n !!",
+  "language": "語言",
+  "logout": "登出",
+  "category": "分類",
+  "product-title": "商品名稱",
+  "original-price": "原價",
+  "price": "售價",
+  "unit": "單位",
+  "image": "圖片",
+  "avaliable": "是否啟用",
+  "edit": "編輯",
+  "create-new-product": "新增商品"
 }

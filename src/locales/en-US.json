@@ -1,3 +1,14 @@
 {
-  "message": "hello i18n !!"
+  "testi18n": "hello, i18n !!",
+  "language": "language",
+  "logout": "logout",
+  "category": "category",
+  "product-title": "title",
+  "original-price": "origin price",
+  "price": "price",
+  "unit": "unit",
+  "image": "image",
+  "avaliable": "avaliable",
+  "edit": "edit",
+  "create-new-product": "new"
 }
