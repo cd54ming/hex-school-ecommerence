@@ -3,32 +3,47 @@
     <v-row align="center" justify="center">
       <v-col cols="12" sm="6" md="3">
         <v-card :loading="loading" raised>
-          <v-card-title class="justify-center">六角學院</v-card-title>
-          <v-card-text>
-            <v-form ref="form">
-              <v-text-field
-                v-model="username"
-                type="email"
-                dense
-                required
-                label="電子郵件"
-                :error="userNameError"
-              ></v-text-field>
-              <v-text-field
-                @keyup.enter="login"
-                v-model="password"
-                type="password"
-                label="密碼"
-                dense
-                required
-              ></v-text-field>
-              <v-checkbox label="保持登入"></v-checkbox>
+          <validation-observer ref="form" v-slot="{ handleSubmit, invalid }">
+            <v-form @submit.prevent="handleSubmit(login)">
+              <v-card-title class="justify-center">六角學院</v-card-title>
+              <v-card-text>
+                <validation-provider vid="email" name="email" v-slot="{ errors }" rules="required">
+                  <v-text-field
+                    v-model="username"
+                    :label="$t('email')"
+                    type="email"
+                    :error-messages="errors"
+                    :disabled="loading"
+                  >
+                  </v-text-field>
+                </validation-provider>
+
+                <validation-provider
+                  vid="password"
+                  name="Password"
+                  v-slot="{ errors }"
+                  rules="required"
+                >
+                  <v-text-field
+                    v-model="password"
+                    :label="$t('password')"
+                    type="password"
+                    :error-messages="errors"
+                    :disabled="loading"
+                    @keyup.enter="login"
+                  ></v-text-field>
+                </validation-provider>
+
+                <!-- <v-checkbox label="保持登入"></v-checkbox> -->
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn depressed type="submit" color="primary" :disabled="loading || invalid">
+                  {{ $t('login') }}
+                </v-btn>
+              </v-card-actions>
             </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn depressed color="primary" :disabled="loading" @click="login">登入 </v-btn>
-          </v-card-actions>
+          </validation-observer>
         </v-card>
       </v-col>
     </v-row>
@@ -44,17 +59,15 @@ export default Vue.extend({
       username: '',
       password: '',
       loading: false,
-      userNameError: false,
-      passwordError: false,
     };
   },
 
   watch: {
     username() {
-      this.userNameError = false;
+      this.$refs.form.reset();
     },
     password() {
-      this.passwordError = false;
+      this.$refs.form.reset();
     },
   },
 
@@ -64,21 +77,21 @@ export default Vue.extend({
       const apiURL = '/admin/signin';
       const apiParams = { username, password };
       const callbackURL = this.$route.query.callback;
+      const path = callbackURL || '/';
+
       this.loading = true;
-      const { data: response } = await this.axios.post(apiURL, apiParams);
-      if (response.success) {
-        if (callbackURL) {
-          await this.$router.push({ path: `${callbackURL}` });
-        } else {
-          await this.$router.push({ path: '/' });
-        }
-      } else {
-        console.log(response.message);
-        console.table(response.error);
-        this.userNameError = true;
-        this.passwordError = true;
-      }
+      const {
+        data: { success: signInSuccess = false },
+      } = await this.axios.post(apiURL, apiParams);
       this.loading = false;
+      if (!signInSuccess) {
+        this.$refs.form.setErrors({
+          email: this.$t('login-error'),
+          password: this.$t('login-error'),
+        });
+      } else {
+        this.$router.push({ path });
+      }
     },
   },
 });

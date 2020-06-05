@@ -1,19 +1,20 @@
 import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
-import localeService from '@/util/localeService';
+import vuetify from '@/plugins/vuetify';
+import i18n from '@/plugins/i18n';
+import { setup as veeValidateSetup } from '@/plugins/veeValidate';
+import { setup as axiosSetup } from '@/plugins/axios';
+import { setDefaultLocale } from '@/util/localeService';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import vuetify from './plugins/vuetify';
-import i18n from './i18n';
 
-axios.defaults.baseURL = process.env.VUE_APP_BASE_API_PATH;
-axios.defaults.withCredentials = true;
-
+setDefaultLocale();
+veeValidateSetup();
+axiosSetup();
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
-localeService.setDefaultLocale();
 
 new Vue({
   router,

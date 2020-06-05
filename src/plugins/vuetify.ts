@@ -11,7 +11,7 @@ Vue.use(Vuetify);
 export default new Vuetify({
   lang: {
     locales: { 'en-US': en, 'zh-TW': zhHant },
-    current: localStorage.getItem('locale') || process.env.VUE_APP_DEFAULT_LOCALE,
+    current: process.env.VUE_APP_DEFAULT_LOCALE,
   },
   icons: {
     iconfont: 'mdi',

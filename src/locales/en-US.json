@@ -10,5 +10,21 @@
   "image": "image",
   "avaliable": "avaliable",
   "edit": "edit",
-  "create-new-product": "new"
+  "create-new-product": "new",
+  "product-name": "name",
+  "product-category": "category",
+  "product-unit": "unit",
+  "product-origin-price": "original price",
+  "product-price": "price",
+  "add-new-product": "add new product",
+  "edit-product-info": "edit product",
+  "product-description": "description",
+  "product-content": "content",
+  "add": "add",
+  "cancel": "cancel",
+  "update": "update",
+  "login": "login",
+  "email": "E-mail",
+  "password": "password",
+  "login-error": "login fail"
 }

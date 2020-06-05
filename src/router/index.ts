@@ -19,10 +19,11 @@ const routes: Array<RouteConfig> = [
     component: () => import('@/views/Login.vue'),
     beforeEnter: async (to, from, next) => {
       const isLogin = await checkLogin();
-      if (!isLogin) {
-        next();
-      } else {
+
+      if (isLogin) {
         next({ path: from.fullPath });
+      } else {
+        next();
       }
     },
   },
@@ -50,19 +51,11 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: "about" */ '@/views/About.vue'),
         meta: { requiresAuth: true },
       },
-      {
-        path: '/i18n',
-        name: 'i18n',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '@/components/HelloI18n.vue'),
-      },
     ],
   },
   {
     path: '*',
-    name: 'a404',
+    name: '404',
     component: () => import('@/views/404.vue'),
   },
 ];

@@ -93,7 +93,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import localeService from '@/util/localeService';
+import { locales, switchLocale as localServiceSwitchLocale } from '@/util/localeService';
 // import HelloI18n from './components/HelloI18n.vue';
 // import HelloWorld from './components/HelloWorld.vue';
 
@@ -112,7 +112,7 @@ export default Vue.extend({
   }),
 
   created() {
-    this.locales = localeService.locales;
+    this.locales = locales;
   },
 
   // computed() {
@@ -124,11 +124,11 @@ export default Vue.extend({
   methods: {
     async logout() {
       this.closeSettingMenu();
-      await this.axios.post('/logout');
-      await this.$router.push({ path: '/login' });
+      await this.$store.dispatch('logout');
+      this.$router.push({ path: '/login' });
     },
     switchLocale(locale: string) {
-      localeService.switchLocale(locale);
+      localServiceSwitchLocale(locale);
       this.closeSettingMenu();
     },
     closeSettingMenu() {
