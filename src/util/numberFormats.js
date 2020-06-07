@@ -11,6 +11,7 @@ const numberFormats = {
       style: 'currency',
       currency: 'TWD',
       currencyDisplay: 'symbol',
+      minimumFractionDigits: 0,
     },
   },
 };

@@ -13,6 +13,7 @@
   "create-new-product": "新增商品",
   "product-name": "商品名稱",
   "product-category": "商品分類",
+  "product-quantity": "數量",
   "product-unit": "單位",
   "product-origin-price": "原價",
   "product-price": "售價",

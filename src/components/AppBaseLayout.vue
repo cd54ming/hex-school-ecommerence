@@ -4,28 +4,63 @@
       <v-subheader>管理員</v-subheader>
       <v-divider></v-divider>
       <v-list dense>
-        <v-list-item link :to="{ name: 'Products' }" color="primary" exact>
+        <v-list-item link color="primary" :to="{ name: 'Products' }" exact>
           <v-list-item-content>
-            <v-list-item-title>產品列表</v-list-item-title>
+            <v-list-item-title>
+              <span>產品列表</span>
+              <v-progress-circular
+                v-if="checkingLogin && navigateTo === 'Products'"
+                class="ml-3"
+                color="primary"
+                indeterminate
+                size="15"
+                width="2"
+              ></v-progress-circular>
+            </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link color="primary" :to="{ name: 'About' }" exact>
+        <v-list-item link color="primary" :to="{ name: 'Orders' }" exact>
           <v-list-item-content>
-            <v-list-item-title>訂單列表</v-list-item-title>
+            <v-list-item-title>
+              <span>訂單列表</span>
+              <v-progress-circular
+                v-if="checkingLogin && navigateTo === 'Orders'"
+                class="ml-3"
+                color="primary"
+                indeterminate
+                size="15"
+                width="2"
+              ></v-progress-circular
+            ></v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link color="primary">
+        <v-list-item link color="primary" :to="{ name: 'Coupons' }" exact>
           <v-list-item-content>
-            <v-list-item-title>優惠券</v-list-item-title>
+            <v-list-item-title>
+              <span>優惠券</span>
+              <v-progress-circular
+                v-if="checkingLogin && navigateTo === 'Coupons'"
+                class="ml-3"
+                color="primary"
+                indeterminate
+                size="15"
+                width="2"
+              ></v-progress-circular>
+            </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
       <v-subheader>模擬功能</v-subheader>
       <v-divider></v-divider>
-      <v-list dense shaped>
-        <v-list-item link>
-          <v-list-item-content color="primary">
-            <v-list-item-title>模擬訂單</v-list-item-title>
+      <v-list dense>
+        <v-list-item link color="primary" :to="{ name: 'MockShopping' }" exact>
+          <v-list-item-content>
+            <v-list-item-title>模擬購物</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link color="primary" :to="{ name: 'MockShoppingCart' }" exact>
+          <v-list-item-content>
+            <v-list-item-title>模擬購物車</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -85,8 +120,6 @@
 
     <v-content>
       <router-view></router-view>
-      <!-- <HelloI18n /> -->
-      <!-- <HelloWorld /> -->
     </v-content>
   </v-app>
 </template>
@@ -94,16 +127,9 @@
 <script lang="ts">
 import Vue from 'vue';
 import { locales, switchLocale as localServiceSwitchLocale } from '@/util/localeService';
-// import HelloI18n from './components/HelloI18n.vue';
-// import HelloWorld from './components/HelloWorld.vue';
 
 export default Vue.extend({
   name: 'AppBaseLayout',
-
-  components: {
-    // HelloI18n,
-    // HelloWorld,
-  },
 
   data: () => ({
     isOpenLogin: false,
@@ -114,12 +140,6 @@ export default Vue.extend({
   created() {
     this.locales = locales;
   },
-
-  // computed() {
-  //   locale() {
-  //     return this.$root.$locale;
-  //   }
-  // },
 
   methods: {
     async logout() {
@@ -134,6 +154,15 @@ export default Vue.extend({
     closeSettingMenu() {
       this.localeList = false;
       this.settingMenu = false;
+    },
+  },
+
+  computed: {
+    checkingLogin() {
+      return this.$store.state.checkingLogin;
+    },
+    navigateTo() {
+      return this.$store.state.navigateTo;
     },
   },
 });

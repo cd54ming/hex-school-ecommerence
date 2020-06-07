@@ -8,17 +8,35 @@ export default new Vuex.Store({
   strict: true,
   state: {
     // productsAll: {},
+    cart: {},
+    product: {},
+    productsForSaleByPage: [],
+    productsForSalePagination: {},
     productsByPage: [],
     productsPagination: {},
-    isLogin: false,
     uploadedImageUrl: '',
+    checkingLogin: false,
+    navigateTo: null,
   },
   mutations: {
     // productsAll(state, productsAll) {
     //   state.productsAll = productsAll;
     // },
-    isLogin(state, isLogin) {
-      state.isLogin = isLogin;
+    cart(state, cart) {
+      state.cart = cart;
+    },
+    checkingLogin(state, { loading, navigateTo }) {
+      state.checkingLogin = loading;
+      state.navigateTo = navigateTo;
+    },
+    product(state, product) {
+      state.product = product;
+    },
+    productsForSaleByPage(state, productsForSaleByPage) {
+      state.productsForSaleByPage = productsForSaleByPage;
+    },
+    productsForSalePagination(state, productsForSalePagination) {
+      state.productsForSalePagination = productsForSalePagination;
     },
     uploadedImageUrl(state, imageUrl) {
       state.uploadedImageUrl = imageUrl;
@@ -33,6 +51,28 @@ export default new Vuex.Store({
   actions: {
     async logout() {
       await axios.post('/logout');
+    },
+    // MockCart
+    async getCart({ commit }) {
+      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/cart`;
+      const { data: response } = await axios.get(apiURL);
+      commit('cart', response.data);
+    },
+    // MockOrder
+    async getProductsForSaleByPage({ commit }, page) {
+      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/products?page=${page}`;
+      const { data } = await axios.get(apiURL);
+      commit('productsForSaleByPage', data.products);
+      commit('productsForSalePagination', data.pagination);
+    },
+    async getProductById({ commit }, id) {
+      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/product/${id}`;
+      const { data } = await axios.get(apiURL);
+      commit('product', data.product);
+    },
+    async addProductsToCart(_, payload) {
+      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/cart`;
+      await axios.post(apiURL, payload);
     },
     // product
     async getProductsByPage({ commit }, page) {

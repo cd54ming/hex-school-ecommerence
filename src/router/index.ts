@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import store from '@/store';
 import axios from 'axios';
 import VueRouter, { RouteConfig } from 'vue-router';
 import AppBaseLayout from '@/components/AppBaseLayout.vue';
@@ -43,6 +44,28 @@ const routes: Array<RouteConfig> = [
         meta: { requiresAuth: true },
       },
       {
+        path: '/mockShopping',
+        name: 'MockShopping',
+        component: () => import('@/views/MockShopping.vue'),
+      },
+      {
+        path: '/mockShoppingCart',
+        name: 'MockShoppingCart',
+        component: () => import('@/views/MockShoppingCart.vue'),
+      },
+      {
+        path: '/coupons',
+        name: 'Coupons',
+        component: () => import('@/views/Coupons.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: '/orders',
+        name: 'Orders',
+        component: () => import('@/views/Orders.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
         path: '/about',
         name: 'About',
         // route level code-splitting
@@ -66,7 +89,9 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
+    store.commit('checkingLogin', { loading: true, navigateTo: to.name });
     const isLogin = await checkLogin();
+    store.commit('checkingLogin', { loading: false, navigateTo: null });
     if (isLogin) {
       next();
     } else {

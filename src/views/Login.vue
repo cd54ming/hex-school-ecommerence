@@ -83,7 +83,6 @@ export default Vue.extend({
       const {
         data: { success: signInSuccess = false },
       } = await this.axios.post(apiURL, apiParams);
-      this.loading = false;
       if (!signInSuccess) {
         this.$refs.form.setErrors({
           email: this.$t('login-error'),
@@ -92,6 +91,7 @@ export default Vue.extend({
       } else {
         this.$router.push({ path });
       }
+      this.loading = false;
     },
   },
 });

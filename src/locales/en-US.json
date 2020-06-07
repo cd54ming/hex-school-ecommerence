@@ -13,6 +13,7 @@
   "create-new-product": "new",
   "product-name": "name",
   "product-category": "category",
+  "product-quantity": "quantity",
   "product-unit": "unit",
   "product-origin-price": "original price",
   "product-price": "price",
