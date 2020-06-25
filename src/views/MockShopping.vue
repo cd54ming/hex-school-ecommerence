@@ -72,6 +72,7 @@
         </v-toolbar>
         <v-divider></v-divider>
         <v-img
+          class="mb-5"
           contain
           :src="
             product.imageUrl ? product.imageUrl : require('@/assets/images/placeholder-image.png')
@@ -214,10 +215,11 @@ export default {
       this.productsLoading = false;
     },
     async addToCart(productId, quantity) {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      const products = { product_id: productId, qty: quantity };
+
       this.addingToCart = true;
-      await this.$store.dispatch('addProductsToCart', {
-        data: { product_id: productId, qty: quantity },
-      });
+      await this.$store.dispatch('addProductsToCart', products);
       this.addingToCart = false;
       this.closeProductDialog();
     },

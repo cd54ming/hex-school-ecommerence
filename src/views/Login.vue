@@ -3,13 +3,15 @@
     <v-row align="center" justify="center">
       <v-col cols="12" sm="6" md="3">
         <v-card :loading="loading" raised>
-          <validation-observer ref="form" v-slot="{ handleSubmit, invalid }">
+          <validation-observer ref="form" v-slot="{ handleSubmit }">
             <v-form @submit.prevent="handleSubmit(login)">
               <v-card-title class="justify-center">六角學院</v-card-title>
-              <v-card-text>
+              <v-card-text class="px-6 py-4">
                 <validation-provider vid="email" name="email" v-slot="{ errors }" rules="required">
                   <v-text-field
                     v-model="username"
+                    dense
+                    outlined
                     :label="$t('email')"
                     type="email"
                     :error-messages="errors"
@@ -28,17 +30,19 @@
                     v-model="password"
                     :label="$t('password')"
                     type="password"
+                    dense
+                    outlined
                     :error-messages="errors"
                     :disabled="loading"
-                    @keyup.enter="login"
+                    @keyup.enter="handleSubmit(login)"
                   ></v-text-field>
                 </validation-provider>
 
                 <!-- <v-checkbox label="保持登入"></v-checkbox> -->
               </v-card-text>
-              <v-card-actions>
+              <v-card-actions class="pa-6 pt-0">
                 <v-spacer></v-spacer>
-                <v-btn depressed type="submit" color="primary" :disabled="loading || invalid">
+                <v-btn depressed type="submit" color="primary" :disabled="loading">
                   {{ $t('login') }}
                 </v-btn>
               </v-card-actions>

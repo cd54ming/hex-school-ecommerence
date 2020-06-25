@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
+import moment from 'moment';
 import vuetify from '@/plugins/vuetify';
 import i18n from '@/plugins/i18n';
 import { setup as veeValidateSetup } from '@/plugins/veeValidate';
@@ -14,7 +15,9 @@ veeValidateSetup();
 axiosSetup();
 setDefaultLocale();
 Vue.config.productionTip = false;
+Vue.prototype.$moment = moment;
 Vue.use(VueAxios, axios);
+Vue.prototype.$locale = 'zh-TW';
 
 new Vue({
   router,

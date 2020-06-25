@@ -132,6 +132,7 @@ export default Vue.extend({
   name: 'AppBaseLayout',
 
   data: () => ({
+    locales: {},
     isOpenLogin: false,
     settingMenu: false,
     localeList: false,

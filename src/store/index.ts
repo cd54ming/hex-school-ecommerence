@@ -4,10 +4,18 @@ import axios from 'axios';
 
 Vue.use(Vuex);
 
+const API_PATH = process.env.VUE_APP_CUSTOM_API_PATH;
+
 export default new Vuex.Store({
   strict: true,
   state: {
     // productsAll: {},
+    orders: [],
+    ordersPagination: {},
+    isAppliedCouponSuccessful: undefined,
+    messageOfAppliedCoupon: '',
+    coupons: [],
+    couponsPagination: {},
     cart: {},
     product: {},
     productsForSaleByPage: [],
@@ -22,6 +30,24 @@ export default new Vuex.Store({
     // productsAll(state, productsAll) {
     //   state.productsAll = productsAll;
     // },
+    ordersPagination(state, ordersPagination) {
+      state.ordersPagination = ordersPagination;
+    },
+    orders(state, orders) {
+      state.orders = orders;
+    },
+    isAppliedCouponSuccessful(state, isAppliedCouponSuccessful) {
+      state.isAppliedCouponSuccessful = isAppliedCouponSuccessful;
+    },
+    messageOfAppliedCoupon(state, messageOfAppliedCoupon) {
+      state.messageOfAppliedCoupon = messageOfAppliedCoupon;
+    },
+    coupons(state, coupons) {
+      state.coupons = coupons;
+    },
+    couponsPagination(state, couponsPagination) {
+      state.couponsPagination = couponsPagination;
+    },
     cart(state, cart) {
       state.cart = cart;
     },
@@ -52,54 +78,107 @@ export default new Vuex.Store({
     async logout() {
       await axios.post('/logout');
     },
-    // MockCart
+    // Orders
+    async getOrders({ commit }, page) {
+      const apiURL = `/api/${API_PATH}/admin/orders?page=${page}`;
+      const { data: response } = await axios.get(apiURL);
+      commit('orders', response.orders);
+      commit('ordersPagination', response.pagination);
+    },
+    // Coupons
+    async getCoupons({ commit }, page) {
+      const apiURL = `/api/${API_PATH}/admin/coupons?page=${page}`;
+      const { data: response } = await axios.get(apiURL);
+      commit('coupons', response.coupons);
+      commit('couponsPagination', response.pagination);
+    },
+    async addCoupon(_, coupon) {
+      const apiURL = `/api/${API_PATH}/admin/coupon`;
+      await axios.post(apiURL, { data: coupon });
+    },
+    async updateCoupon(_, coupon) {
+      const apiURL = `/api/${API_PATH}/admin/coupon/${coupon.id}`;
+      await axios.put(apiURL, { data: coupon });
+    },
+    async deleteCoupon(_, couponId) {
+      const apiURL = `/api/${API_PATH}/admin/coupon/${couponId}`;
+      await axios.delete(apiURL);
+    },
+    // MockShppingCart
+    async applyCoupon({ commit }, couponCode) {
+      const apiURL = `/api/${API_PATH}/coupon`;
+      const { data: response } = await axios.post(apiURL, { data: { code: couponCode } });
+      commit('isAppliedCouponSuccessful', response.success);
+      commit('messageOfAppliedCoupon', response.message);
+    },
+    async deleteShoppingCartItem(_, productId) {
+      const apiURL = `/api/${API_PATH}/cart/${productId}`;
+      await axios.delete(apiURL);
+    },
     async getCart({ commit }) {
-      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/cart`;
+      const apiURL = `/api/${API_PATH}/cart`;
       const { data: response } = await axios.get(apiURL);
       commit('cart', response.data);
     },
+    async pay(_, orderId) {
+      const apiURL = `/api/${API_PATH}/pay/${orderId}`;
+      try {
+        await axios.post(apiURL);
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    async createOrder(_, customerInfo) {
+      const apiURL = `/api/${API_PATH}/order`;
+      try {
+        const response = await axios.post(apiURL, { data: customerInfo });
+        await this.dispatch('pay', response.data.orderId);
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
     // MockOrder
     async getProductsForSaleByPage({ commit }, page) {
-      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/products?page=${page}`;
+      const apiURL = `/api/${API_PATH}/products?page=${page}`;
       const { data } = await axios.get(apiURL);
       commit('productsForSaleByPage', data.products);
       commit('productsForSalePagination', data.pagination);
     },
-    async getProductById({ commit }, id) {
-      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/product/${id}`;
+    async getProductById({ commit }, productId) {
+      const apiURL = `/api/${API_PATH}/product/${productId}`;
       const { data } = await axios.get(apiURL);
       commit('product', data.product);
     },
-    async addProductsToCart(_, payload) {
-      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/cart`;
-      await axios.post(apiURL, payload);
+    async addProductsToCart(_, products) {
+      const apiURL = `/api/${API_PATH}/cart`;
+      await axios.post(apiURL, { data: products });
     },
     // product
     async getProductsByPage({ commit }, page) {
-      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/admin/products?page=${page}`;
+      const apiURL = `/api/${API_PATH}/admin/products?page=${page}`;
       const { data } = await axios.get(apiURL);
       commit('productsByPage', data.products);
       commit('productsPagination', data.pagination);
     },
     async uploadImage({ commit }, formData) {
-      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/admin/upload`;
+      const apiURL = `/api/${API_PATH}/admin/upload`;
       const { data } = await axios.post(apiURL, formData);
       commit('uploadedImageUrl', data.imageUrl);
     },
     async deleteProduct(_, productId) {
-      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/admin/product/${productId}`;
+      const apiURL = `/api/${API_PATH}/admin/product/${productId}`;
       await axios.delete(apiURL);
     },
-    async updateProduct(_, { productId, apiParams }) {
-      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/admin/product/${productId}`;
-      await axios.put(apiURL, apiParams);
+    async updateProduct(_, product) {
+      const apiURL = `/api/${API_PATH}/admin/product/${product.id}`;
+      await axios.put(apiURL, { data: product });
     },
-    async addProduct(_, apiParams) {
-      const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/admin/product`;
-      await axios.post(apiURL, apiParams);
+    async addProduct(_, product) {
+      const apiURL = `/api/${API_PATH}/admin/product`;
+      await axios.post(apiURL, { data: product });
     },
     // async getProducts({ commit }) {
-    //   const apiURL = `/api/${process.env.VUE_APP_CUSTOM_API_PATH}/admin/products/all`;
+    //   const apiURL = `/api/${API_PATH}/admin/products/all`;
     //   const { data } = await axios.get(apiURL);
     //   commit('productsAll', data.products);
     // },

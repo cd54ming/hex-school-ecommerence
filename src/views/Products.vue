@@ -25,13 +25,13 @@
         </template>
 
         <template v-slot:item.origin_price="{ item: product }">
-          <span class="text-end d-block" v-if="product.origin_price">
+          <span class="text-right d-block" v-if="product.origin_price">
             {{ $n(product.origin_price, 'currency') }}
           </span>
         </template>
 
         <template v-slot:item.price="{ item: product }">
-          <span class="text-end d-block" v-if="product.price">
+          <span class="text-right d-block" v-if="product.price">
             {{ $n(product.price, 'currency') }}
           </span>
         </template>
@@ -67,7 +67,7 @@
               :input-value="product.is_enabled"
               :false-value="0"
               :true-value="1"
-              @change="switchAvaliable(product, $event)"
+              @change="switchProductAvaliable(product, $event)"
               :loading="switchAvaliableLoading[product.id]"
               :disabled="switchAvaliableLoading[product.id]"
             ></v-switch>
@@ -86,14 +86,14 @@
       </v-data-table>
     </v-row>
 
+    <!-- 新增商品 Dialog -->
     <v-dialog
       v-model="productDialog"
       max-width="450"
-      min-width="350"
       :persistent="submitDataLoading || uploadImageLoading"
     >
       <v-card :loading="submitDataLoading">
-        <validation-observer ref="form" v-slot="{ invalid, passes, changed }">
+        <validation-observer ref="form" v-slot="{ handleSubmit }">
           <v-toolbar flat dense dark color="primary">
             <v-toolbar-title
               v-text="(isNewProduct? $t('add-new-product'): $t('edit-product-info'))"
@@ -111,52 +111,57 @@
             <form>
               <v-container>
                 <v-row>
-                  <v-col cols="12">
+                  <v-col cols="12" class="py-0">
                     <v-text-field-with-validation
                       rules="required"
                       v-model="product.title"
                       :label="$t('product-name')"
                       dense
+                      outlined
                       :disabled="submitDataLoading"
                     ></v-text-field-with-validation>
                   </v-col>
-                  <v-col cols="6">
+                  <v-col cols="6" class="py-0">
                     <v-text-field-with-validation
                       rules="required"
                       v-model="product.category"
                       :label="$t('product-category')"
                       dense
+                      outlined
                       :disabled="submitDataLoading"
                     ></v-text-field-with-validation>
                   </v-col>
-                  <v-col cols="6">
+                  <v-col cols="6" class="py-0">
                     <v-text-field-with-validation
                       rules="required"
                       v-model="product.unit"
                       :label="$t('product-unit')"
                       dense
+                      outlined
                       :disabled="submitDataLoading"
                     ></v-text-field-with-validation>
                   </v-col>
-                  <v-col cols="6">
+                  <v-col cols="6" class="py-0">
                     <v-text-field-with-validation
                       rules="required|numeric"
                       v-model="product.origin_price"
                       :label="$t('product-origin-price')"
                       dense
+                      outlined
                       :disabled="submitDataLoading"
                     ></v-text-field-with-validation>
                   </v-col>
-                  <v-col cols="6">
+                  <v-col cols="6" class="py-0">
                     <v-text-field-with-validation
                       rules="required|numeric"
                       v-model="product.price"
                       :label="$t('product-price')"
                       dense
+                      outlined
                       :disabled="submitDataLoading"
                     ></v-text-field-with-validation>
                   </v-col>
-                  <v-col cols="12">
+                  <v-col cols="12" class="py-0">
                     <validation-provider>
                       <v-file-input
                         v-model="uploadedImage"
@@ -167,6 +172,7 @@
                         :label="$t('image')"
                         prepend-icon=""
                         dense
+                        outlined
                         @change="uploadImage"
                       >
                         <template v-slot:selection="{ text }">
@@ -175,10 +181,10 @@
                       </v-file-input>
                     </validation-provider>
                   </v-col>
-                  <v-col cols="12" v-if="isNewProduct && uploadedImage">
+                  <v-col cols="12" class="py-0 mb-8" v-if="isNewProduct && uploadedImage">
                     <v-img :src="uploadedImageUrl"> </v-img>
                   </v-col>
-                  <v-col cols="12" v-else-if="!isNewProduct && product.imageUrl">
+                  <v-col cols="12" class="py-0 mb-8" v-else-if="!isNewProduct && product.imageUrl">
                     <v-img :src="uploadedImageUrl || product.imageUrl">
                       <!-- <v-row> -->
                       <v-avatar
@@ -196,10 +202,11 @@
                       </v-avatar>
                     </v-img>
                   </v-col>
-                  <v-col cols="12">
+                  <v-col cols="12" class="py-0">
                     <validation-provider>
                       <v-textarea
                         dense
+                        outlined
                         v-model="product.description"
                         rows="4"
                         :label="$t('product-description')"
@@ -207,10 +214,11 @@
                       ></v-textarea>
                     </validation-provider>
                   </v-col>
-                  <v-col cols="12">
+                  <v-col cols="12" class="py-0">
                     <validation-provider>
                       <v-textarea
                         dense
+                        outlined
                         v-model="product.content"
                         rows="4"
                         :label="$t('product-content')"
@@ -218,11 +226,11 @@
                       ></v-textarea>
                     </validation-provider>
                   </v-col>
-                  <v-col cols="auto">
+                  <v-col cols="auto" class="py-0">
                     <validation-provider>
                       <v-switch
-                        dense
                         v-model="product.is_enabled"
+                        class="ma-0"
                         :false-value="0"
                         :true-value="1"
                         :label="$t('avaliable')"
@@ -247,13 +255,42 @@
             <v-btn
               depressed
               color="primary"
-              :disabled="submitDataLoading || uploadImageLoading || invalid || !changed"
+              :disabled="submitDataLoading || uploadImageLoading"
               :loading="submitDataLoading"
-              @click="passes(submitData)"
+              @click="handleSubmit(submitData)"
               v-text="(isNewProduct ? $t('add') : $t('update'))"
             ></v-btn>
           </v-card-actions>
         </validation-observer>
+      </v-card>
+    </v-dialog>
+
+    <!-- 刪除商品 Dialog -->
+    <v-dialog v-model="isDeleteProductDialogOpen" width="280" :persistent="deletingProduct">
+      <v-card>
+        <v-toolbar dense flat color="error" dark>
+          <v-spacer></v-spacer>
+          <v-icon @click="closeDeleteProductDialog" :disabled="deletingCoupon">mdi-close</v-icon>
+        </v-toolbar>
+        <v-card-text class="py-6">
+          <span class="subtitle-1">
+            確定要刪除商品
+            <span class="error--text">{{ productWillbeDeleted.title }}</span>
+            嗎?
+          </span>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn outlined @click="closeDeleteProductDialog" :disabled="deletingCoupon">否</v-btn>
+          <v-btn
+            depressed
+            color="error"
+            @click="deleteProduct"
+            :disabled="deletingProduct"
+            :loading="deletingProduct"
+            >是</v-btn
+          >
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-container>
@@ -269,9 +306,9 @@ export default Vue.extend({
       options: {},
       getProductsLoading: false,
       submitDataLoading: false,
-      deleteProductLoading: false,
+      deletingProduct: false,
       switchAvaliableLoading: {},
-      deleteProductDialog: false,
+      isDeleteProductDialogOpen: false,
       uploadedImage: undefined,
       uploadImageLoading: false,
       productDialog: false,
@@ -361,29 +398,19 @@ export default Vue.extend({
         this.$store.commit('uploadedImageUrl', '');
       }
     },
-    async switchAvaliable({ id: productId }, isAvaliable: number) {
-      const originalProduct = this.products.find((product) => productId === product.id);
+    async switchProductAvaliable({ id: productId }, isAvaliable: number) {
+      const editedProduct = this.products.find((product) => productId === product.id);
       // eslint-disable-next-line @typescript-eslint/camelcase
-      originalProduct.is_enabled = isAvaliable;
+      editedProduct.is_enabled = isAvaliable;
       this.$set(this.switchAvaliableLoading, productId, true);
-      await this.$store.dispatch('updateProduct', {
-        productId,
-        apiParams: { data: originalProduct },
-      });
+      await this.$store.dispatch('updateProduct', editedProduct);
       this.$set(this.switchAvaliableLoading, productId, false);
     },
     async deleteProduct() {
-      this.deleteProductLoading = true;
-      try {
-        await this.$store.dispatch('deleteProduct', this.productWillbeDeleted.id);
-      } catch (error) {
-        console.log(error);
-      }
-      this.deleteProductLoading = false;
+      this.deletingProduct = true;
+      await this.$store.dispatch('deleteProduct', this.productWillbeDeleted.id);
+      this.deletingProduct = false;
       this.closeDeleteProductDialog();
-      setTimeout(() => {
-        this.productWillbeDeleted = {};
-      }, 300);
       await this.getProducts();
     },
     async getProducts() {
@@ -394,7 +421,7 @@ export default Vue.extend({
     async submitData() {
       this.submitDataLoading = true;
       if (this.isNewProduct) {
-        await this.$store.dispatch('addProduct', { data: this.product });
+        await this.$store.dispatch('addProduct', this.product);
       } else {
         await this.$store.dispatch('updateProduct', {
           productId: this.product.id,
@@ -410,11 +437,11 @@ export default Vue.extend({
       this.product = { is_enabled: 1 };
     },
     openDeleteProductDialog(product: object) {
-      this.deleteProductDialog = true;
       this.productWillbeDeleted = product;
+      this.isDeleteProductDialogOpen = true;
     },
     closeDeleteProductDialog() {
-      this.deleteProductDialog = false;
+      this.isDeleteProductDialogOpen = false;
     },
     openProductDialog(isNew: boolean, product: object) {
       this.isNewProduct = isNew;
