@@ -100,8 +100,10 @@
             ></v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn
+              ref="closeProductDialogIcon"
               icon
               @click="closeProductDialog"
+              @keyup.enter="closeProductDialog"
               :disabled="submitDataLoading || uploadImageLoading"
             >
               <v-icon>mdi-close</v-icon>
@@ -270,7 +272,7 @@
       <v-card>
         <v-toolbar dense flat color="error" dark>
           <v-spacer></v-spacer>
-          <v-icon @click="closeDeleteProductDialog" :disabled="deletingCoupon">mdi-close</v-icon>
+          <v-icon @click="closeDeleteProductDialog" :disabled="deletingProduct">mdi-close</v-icon>
         </v-toolbar>
         <v-card-text class="py-6">
           <span class="subtitle-1">
@@ -281,7 +283,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn outlined @click="closeDeleteProductDialog" :disabled="deletingCoupon">否</v-btn>
+          <v-btn outlined @click="closeDeleteProductDialog" :disabled="deletingProduct">否</v-btn>
           <v-btn
             depressed
             color="error"
@@ -443,7 +445,7 @@ export default Vue.extend({
     closeDeleteProductDialog() {
       this.isDeleteProductDialogOpen = false;
     },
-    openProductDialog(isNew: boolean, product: object) {
+    async openProductDialog(isNew: boolean, product: object) {
       this.isNewProduct = isNew;
       if (isNew) {
         this.productInitialize();
@@ -454,6 +456,9 @@ export default Vue.extend({
       this.productDialog = true;
       this.$nextTick(() => {
         this.$refs.form.reset();
+        console.log(document.activeElement);
+        // console.log(this.$refs.closeProductDialogIcon);
+        // this.$refs.closeProductDialogIcon.focus();
       });
     },
     closeProductDialog() {

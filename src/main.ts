@@ -14,6 +14,7 @@ import store from './store';
 veeValidateSetup();
 axiosSetup();
 setDefaultLocale();
+
 Vue.config.productionTip = false;
 Vue.prototype.$moment = moment;
 Vue.use(VueAxios, axios);

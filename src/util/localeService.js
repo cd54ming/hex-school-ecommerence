@@ -4,6 +4,7 @@ import { localize as veeValidateLocalize } from '@/plugins/veeValidate';
 import moment from 'moment';
 import Vue from 'vue';
 
+// 添加 local 變數至 vue instance 中，可以使用 this.$locale 來做訪問
 const DEFAULT_LOCALE = process.env.VUE_APP_DEFAULT_LOCALE;
 const vueLocale = Vue.observable({ locale: DEFAULT_LOCALE });
 Object.defineProperty(Vue.prototype, '$locale', {

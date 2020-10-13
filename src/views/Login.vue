@@ -42,6 +42,7 @@
               </v-card-text>
               <v-card-actions class="pa-6 pt-0">
                 <v-spacer></v-spacer>
+                <v-btn @click="test">test</v-btn>
                 <v-btn depressed type="submit" color="primary" :disabled="loading">
                   {{ $t('login') }}
                 </v-btn>
@@ -76,6 +77,27 @@ export default Vue.extend({
   },
 
   methods: {
+    test() {
+      const myHeaders = new Headers();
+      myHeaders.append(
+        'Cookie',
+        'buyClass=valuation; ShopLan=1; dns%5Fgoogle%5Ftag=++++++++++++++++++++++++++++++++++++++++++++++++++; dns%5Fgoogle%5Fsite%5Fverification=; ShopDefault=1; dns%5Fyahoo%5Fverification%5Fkey=; dns%5Fyahoo%5Fwebmaster%5Fcode=; dns%5FPageTracker=UA%2D93583410%2D4; Enable%5FShareButton=False; NoFixUrl=True; WaterMark=False; partnerID=rwd1262; dns%5Fbing%5Fuet=8ED90FB69BCA31CF55BE7AADDF6636F3; WebName=%E5%8A%9B%E5%AE%87%E5%BD%A9%E8%97%9D%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8; PageTracker=; ASPSESSIONIDQCRBSACD=HDCOFHJANJBEEPLHKFCIJMEF',
+      );
+
+      const requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow',
+      };
+
+      fetch(
+        'http://www.liyu-gravure.com.tw/ec99/rwd1262/product.asp?prodid=2_37&category_id=2',
+        requestOptions,
+      )
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((error) => console.log('error', error));
+    },
     async login() {
       const { username, password } = this;
       const apiURL = '/admin/signin';

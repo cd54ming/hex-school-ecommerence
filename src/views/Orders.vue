@@ -9,22 +9,29 @@
         item-key="id"
         style="width: 100%;"
         :loading="ordersLoading"
+        @click:row="openOrderDialog"
       >
         <template v-slot:item.create_at="{ item: order }">
-          <span> {{ $moment(order.create_at).format('LL') }}</span>
+          <span>{{ $moment(order.create_at).format('LL') }}</span>
         </template>
 
         <template v-slot:item.is_paid="{ item: order }">
-          <span> {{ order.is_paid ? '是' : '否' }}</span>
+          <span>{{ order.is_paid ? '是' : '否' }}</span>
         </template>
 
         <template v-slot:item.paid_date="{ item: order }">
-          <span> {{ $moment(order.paid_date).format('LL') }}</span>
+          <span>{{ $moment(order.paid_date).format('LL') }}</span>
         </template>
 
         <template v-slot:item.total="{ item: order }">
           <span class="text-right d-block">
-            {{ $n(order.total, 'currency') }}
+            {{ order.total ? $n(order.total, 'currency') : '$0' }}
+          </span>
+        </template>
+
+        <template v-slot:item.user="{ item: order }">
+          <span class="text-right d-block">
+            {{ 'user' in order && 'name' in order.user ? order.user.name : '' }}
           </span>
         </template>
 
@@ -39,6 +46,17 @@
         </template>
       </v-data-table>
     </v-row>
+
+    <v-dialog v-model="isOrderDialogOpen" width="300">
+      <v-card>
+        {{ focusedOrder.is_paid }}
+        <ul>
+          <li v-for="(product, index) in focusedOrder.products" :key="index">
+            {{ product.product.title }}
+          </li>
+        </ul>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -47,15 +65,19 @@ export default {
   data: () => ({
     ordersLoading: false,
     page: 1,
+    isOrderDialogOpen: false,
+    focusedOrder: {},
   }),
   async created() {
     await this.getOrders();
+    
   },
   watch: {
     page() {
       this.getOrders();
     },
   },
+
   computed: {
     headers() {
       return [
@@ -78,6 +100,10 @@ export default {
       this.ordersLoading = true;
       await this.$store.dispatch('getOrders', this.page);
       this.ordersLoading = false;
+    },
+    openOrderDialog(order) {
+      this.focusedOrder = order;
+      this.isOrderDialogOpen = true;
     },
   },
 };
