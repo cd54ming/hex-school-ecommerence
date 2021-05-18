@@ -4,11 +4,12 @@
     id="products-waterfall"
     class="overflow-y-auto"
     style="height: calc(100vh - 56px);"
+    ref="productsWaterfall"
   >
     <v-row v-if="productsFirstLoading" justify="center" align="center" style="height: 100%;">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </v-row>
-    <v-row justify="center" v-scroll:#products-waterfall="onScroll">
+    <v-row justify="center" ref="products" v-scroll:#products-waterfall="onScroll">
       <v-col cols="auto" v-for="(product, index) in products" :key="index">
         <v-card
           width="280"
@@ -178,11 +179,22 @@ export default {
     },
   },
   async created() {
-    await this.getProducts(this.productsLoadedCount + 1);
+    await this.getProducts(this.productsLoadedCount);
     this.productsLoadedCount += 1;
     this.productsFirstLoading = false;
+    await this.detectLoadProduct();
   },
   methods: {
+    async detectLoadProduct() {
+      if (this.$refs.productsWaterfall.offsetHeight >= this.$refs.products.offsetHeight) {
+        try {
+          await this.getProducts(this.productsLoadedCount + 1);
+          this.productsLoadedCount += 1;
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+    },
     async openProductDialog(productId) {
       await this.getProduct(productId);
       this.quantityOfOrder = 1;
