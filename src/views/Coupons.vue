@@ -225,7 +225,7 @@ export default {
       isCouponDialogOpen: false,
       isDeleteCouponDialogOpen: false,
       deletingCoupon: false,
-      editingCouponAvaliable: {},
+      editingCouponAvaliable: [],
       page: 1,
     };
   },
