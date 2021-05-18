@@ -70,7 +70,6 @@ export default {
   }),
   async created() {
     await this.getOrders();
-    
   },
   watch: {
     page() {
