@@ -49,12 +49,16 @@
 
     <v-dialog v-model="isOrderDialogOpen" width="300">
       <v-card>
-        {{ focusedOrder.is_paid }}
+        <div class="pa-6">
+          <v-icon>mdi-sign-caution</v-icon>
+          功能測試中...
+        </div>
+        <!-- {{ focusedOrder.is_paid }}
         <ul>
           <li v-for="(product, index) in focusedOrder.products" :key="index">
             {{ product.product.title }}
           </li>
-        </ul>
+        </ul> -->
       </v-card>
     </v-dialog>
   </v-container>
