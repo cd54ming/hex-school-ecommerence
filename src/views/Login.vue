@@ -16,6 +16,7 @@
                     type="email"
                     :error-messages="errors"
                     :disabled="loading"
+                    autocomplete="username"
                   >
                   </v-text-field>
                 </validation-provider>
@@ -32,17 +33,22 @@
                     type="password"
                     dense
                     outlined
+                    autocomplete="current-password"
                     :error-messages="errors"
                     :disabled="loading"
                     @keyup.enter="handleSubmit(login)"
                   ></v-text-field>
                 </validation-provider>
 
+                <div class="caption grey--text">
+                  <div>測試用帳號: hi54ming@gmail.com</div>
+                  <div>測試用密碼: hexvueapi</div>
+                </div>
                 <!-- <v-checkbox label="保持登入"></v-checkbox> -->
               </v-card-text>
               <v-card-actions class="pa-6 pt-0">
                 <v-spacer></v-spacer>
-                <v-btn @click="test">test</v-btn>
+                <!-- <v-btn @click="test">test</v-btn> -->
                 <v-btn depressed type="submit" color="primary" :disabled="loading">
                   {{ $t('login') }}
                 </v-btn>
@@ -103,7 +109,7 @@ export default Vue.extend({
       const apiURL = '/admin/signin';
       const apiParams = { username, password };
       const callbackURL = this.$route.query.callback;
-      const path = callbackURL || '/';
+      const path = callbackURL || 'mockShopping';
 
       this.loading = true;
       const {
