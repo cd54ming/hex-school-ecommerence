@@ -298,7 +298,7 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
 
@@ -369,7 +369,7 @@ export default Vue.extend({
       return this.$store.state.productsByPage;
     },
     totalPage() {
-      return this.$store.state.productsPagination.total_pages;
+      return this.$store.state.productsPagination?.total_pages ?? 0;
     },
     // ...mapState({
     //   uploadedImageUrl: 'uploadedImageUrl',
@@ -400,7 +400,7 @@ export default Vue.extend({
         this.$store.commit('uploadedImageUrl', '');
       }
     },
-    async switchProductAvaliable({ id: productId }, isAvaliable: number) {
+    async switchProductAvaliable({ id: productId }, isAvaliable) {
       const editedProduct = this.products.find((product) => productId === product.id);
       // eslint-disable-next-line @typescript-eslint/camelcase
       editedProduct.is_enabled = isAvaliable;
@@ -438,14 +438,14 @@ export default Vue.extend({
       // eslint-disable-next-line @typescript-eslint/camelcase
       this.product = { is_enabled: 1 };
     },
-    openDeleteProductDialog(product: object) {
+    openDeleteProductDialog(product) {
       this.productWillbeDeleted = product;
       this.isDeleteProductDialogOpen = true;
     },
     closeDeleteProductDialog() {
       this.isDeleteProductDialogOpen = false;
     },
-    async openProductDialog(isNew: boolean, product: object) {
+    async openProductDialog(isNew, product) {
       this.isNewProduct = isNew;
       if (isNew) {
         this.productInitialize();

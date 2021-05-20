@@ -126,7 +126,7 @@
   </v-app>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 import { locales } from '@/util/localeService';
 
@@ -146,7 +146,7 @@ export default Vue.extend({
       await this.$store.dispatch('logout');
       this.$router.push({ path: '/login' });
     },
-    switchLocale(locale: string) {
+    switchLocale(locale) {
       this.$locale = locale;
       this.closeSettingMenu();
     },

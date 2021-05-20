@@ -13,7 +13,7 @@ async function checkLogin() {
   return response.success;
 }
 
-const routes: Array<RouteConfig> = [
+const routes = [
   {
     path: '/login',
     name: 'Login',
@@ -35,7 +35,9 @@ const routes: Array<RouteConfig> = [
       {
         path: '',
         name: 'Home',
-        component: Home,
+        redirect: { name: 'MockShopping' },
+        // component: () => import('@/views/MockShopping.vue'),
+        // meta: { requiresAuth: true },
       },
       {
         path: '/products',
@@ -47,11 +49,13 @@ const routes: Array<RouteConfig> = [
         path: '/mockShopping',
         name: 'MockShopping',
         component: () => import('@/views/MockShopping.vue'),
+        meta: { requiresAuth: true },
       },
       {
         path: '/mockShoppingCart',
         name: 'MockShoppingCart',
         component: () => import('@/views/MockShoppingCart.vue'),
+        meta: { requiresAuth: true },
       },
       {
         path: '/coupons',

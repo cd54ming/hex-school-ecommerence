@@ -1,6 +1,8 @@
 module.exports = {
   transpileDependencies: ['vuetify'],
 
+  publicPath: process.env.NODE_ENV === 'production' ? '/hex-school-ecommerence/' : './',
+
   pluginOptions: {
     i18n: {
       locale: 'en-US',
@@ -18,7 +20,15 @@ module.exports = {
     },
   },
 
+  lintOnSave: false,
+
   configureWebpack: {
     devtool: 'source-map',
+  },
+
+  pages: {
+    index: {
+      entry: './src/main.js',
+    },
   },
 };

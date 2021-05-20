@@ -309,7 +309,7 @@ export default {
       return this.$store.state.coupons;
     },
     totalPage() {
-      return this.$store.state.couponsPagination.total_pages;
+      return this.$store.state.couponsPagination?.total_pages ?? 0;
     },
     headers() {
       return [

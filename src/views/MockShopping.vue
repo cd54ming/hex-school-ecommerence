@@ -238,7 +238,7 @@ export default {
   },
   computed: {
     totalPage() {
-      return this.$store.state.productsForSalePagination.total_pages;
+      return this.$store.state.productsForSalePagination?.total_pages ?? 0;
     },
     product() {
       return this.$store.state.product;

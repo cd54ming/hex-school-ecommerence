@@ -8,7 +8,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 /*
 import { Component, Vue, Watch } from 'vue-property-decorator';
 
@@ -28,7 +28,7 @@ export default class HelloI18n extends Vue {
 */
 </script>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 import localeService from '@/util/localeService.js';
 
@@ -44,4 +44,5 @@ export default Vue.extend({
   "en": {},
   "zh-TW": {}
 }
+
 </i18n>

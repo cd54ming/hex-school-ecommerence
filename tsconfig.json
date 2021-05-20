@@ -24,7 +24,14 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "src/util/numberFormats.js"
+    // "src/util/numberFormats.js",
+    // "src/main.js",
+    // "src/plugins/vuetify.js",
+    // "src/plugins/veeValidate.js",
+    // "src/plugins/i18n.js",
+    // "src/plugins/axios.js",
+    // "src/router/index.js",
+    // "src/store/index.js"
   ],
   "exclude": ["node_modules"]
 }

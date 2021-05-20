@@ -61,7 +61,7 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 
 export default Vue.extend({
@@ -112,15 +112,17 @@ export default Vue.extend({
       const path = callbackURL || 'mockShopping';
 
       this.loading = true;
-      const {
-        data: { success: signInSuccess = false },
-      } = await this.axios.post(apiURL, apiParams);
+      const response = await this.axios.post(apiURL, apiParams);
+      const signInSuccess = response.data.success;
       if (!signInSuccess) {
         this.$refs.form.setErrors({
           email: this.$t('login-error'),
           password: this.$t('login-error'),
         });
       } else {
+        const { token, expired } = response.data;
+        document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
+        this.axios.defaults.headers.common.Authorization = `${token}`;
         this.$router.push({ path });
       }
       this.loading = false;

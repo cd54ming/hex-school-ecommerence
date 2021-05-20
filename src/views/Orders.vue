@@ -95,7 +95,7 @@ export default {
       return this.$store.state.orders;
     },
     totalPage() {
-      return this.$store.state.ordersPagination.total_pages;
+      return this.$store.state.ordersPagination?.total_pages ?? 0;
     },
   },
   methods: {
