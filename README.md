@@ -1,6 +1,6 @@
 # hex-school-ecommerce
 ## Demo
-https://kuochinming.github.io/hex-school-ecommerence/
+https://cd54ming.github.io/hex-school-ecommerence
 
 ## Project setup
 ```
