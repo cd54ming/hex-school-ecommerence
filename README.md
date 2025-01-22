@@ -1,6 +1,10 @@
 # hex-school-ecommerce
-## Demo
-https://cd54ming.github.io/hex-school-ecommerence
+
+[Live Demo](https://cd54ming.github.io/hex-school-ecommerence)
+
+<img width="1920" alt="截圖 2025-01-22 下午6 02 56" src="https://github.com/user-attachments/assets/6408a44d-2669-40d8-adc0-da428438420e" />
+
+------
 
 ## Project setup
 ```
